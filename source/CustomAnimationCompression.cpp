@@ -1,4 +1,7 @@
 #include "IUnityAnimationCompression.h"
+#include <climits>
+#include "assert.h"
+#include <algorithm>
 void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityIssueAnimationCompressionFunc(UnityAnimationCompressionFuncs* callbacks)
 {
     callbacks->OnCurveCompress = OnCurveCustomCompress;
@@ -7,9 +10,27 @@ void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityIssueAnimationCompressionFu
     callbacks->OnCurveSample = OnCurveCustomSample;
 }
 
-int OnCurveCustomCompress(AnimationCurveForPlugin *curve, int curveCount, void *output)
+const float kBiggestFloatSmallerThanOne = 0.99999994f;
+inline int CeilfToInt(float f)
 {
-    return 10086;
+    assert(f >= INT_MIN && f <= INT_MAX);
+    return f >= 0 ? (int)(f + kBiggestFloatSmallerThanOne) : (int)(f);
+}
+
+int OnCurveCustomCompress(AnimationCurveForPlugin* allCurves, int curveCount, float startTime, float stopTime, float sampleRate, void *output)
+{
+    int frameCount = std::max<int>(CeilfToInt(stopTime - startTime) * sampleRate + 1, 2);
+    for (int i = 0; i < curveCount; i++)
+    {
+        AnimationCurveForPlugin curCurve = allCurves[i];
+        for (int j = 0; j < frameCount; j++)
+        {
+            float time = startTime + ((float)j / sampleRate);
+            float* retValue = nullptr;
+            curCurve.Evaluate(time, retValue);
+        }
+    }
+    return frameCount * curveCount;
 }
 
 
