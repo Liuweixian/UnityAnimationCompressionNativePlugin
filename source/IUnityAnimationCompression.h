@@ -27,20 +27,12 @@ public:
         kKeyframeFloat = 3,
     };
 
-    AnimationCurveForPlugin(void* curveData, KeyFrameType keyframeType)
-    {
-        m_CurveData = curveData;
-        m_KeyFrameType = keyframeType;
-    }
-
-    AnimationCurveForPlugin()
-    {
-        m_CurveData = nullptr;
-        m_KeyFrameType = kInvalid;
-    }
+    AnimationCurveForPlugin(void* unityCurvePointer, KeyFrameType keyframeType);
+    AnimationCurveForPlugin();
+    void Evaluate(float time, float* output);
 
 private:
-	void* m_CurveData;
+	void* m_unityCurvePointer;
 	KeyFrameType m_KeyFrameType;
 };
 
