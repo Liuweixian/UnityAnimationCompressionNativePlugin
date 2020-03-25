@@ -7,15 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		25A164122428F62E00AC575F /* CustomAnimationCompression.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25A164102428F62E00AC575F /* CustomAnimationCompression.cpp */; };
+		25A164122428F62E00AC575F /* DenseClipCompression.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25A164102428F62E00AC575F /* DenseClipCompression.cpp */; };
 		25A164132428F62E00AC575F /* IUnityAnimationCompression.h in Sources */ = {isa = PBXBuildFile; fileRef = 25A164112428F62E00AC575F /* IUnityAnimationCompression.h */; };
+		25A1642E242A0C0500AC575F /* IUnityInterface.h in Sources */ = {isa = PBXBuildFile; fileRef = 25A1642D242A0C0500AC575F /* IUnityInterface.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		25A163FF2428EE2A00AC575F /* AnimationCompression.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AnimationCompression.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		25A164022428EE2A00AC575F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		25A164102428F62E00AC575F /* CustomAnimationCompression.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = CustomAnimationCompression.cpp; path = ../../source/CustomAnimationCompression.cpp; sourceTree = "<group>"; };
+		25A164102428F62E00AC575F /* DenseClipCompression.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = DenseClipCompression.cpp; path = ../../source/DenseClipCompression.cpp; sourceTree = "<group>"; };
 		25A164112428F62E00AC575F /* IUnityAnimationCompression.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IUnityAnimationCompression.h; path = ../../source/IUnityAnimationCompression.h; sourceTree = "<group>"; };
+		25A1642D242A0C0500AC575F /* IUnityInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IUnityInterface.h; path = ../../source/IUnityInterface.h; sourceTree = "<group>"; };
+		25A1642F242A433B00AC575F /* DenseClipCompression.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DenseClipCompression.h; path = ../../source/DenseClipCompression.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,7 +35,9 @@
 		25A163F62428EE2A00AC575F = {
 			isa = PBXGroup;
 			children = (
-				25A164102428F62E00AC575F /* CustomAnimationCompression.cpp */,
+				25A1642F242A433B00AC575F /* DenseClipCompression.h */,
+				25A1642D242A0C0500AC575F /* IUnityInterface.h */,
+				25A164102428F62E00AC575F /* DenseClipCompression.cpp */,
 				25A164112428F62E00AC575F /* IUnityAnimationCompression.h */,
 				25A164012428EE2A00AC575F /* AnimationCompression */,
 				25A164002428EE2A00AC575F /* Products */,
@@ -122,7 +127,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				25A164122428F62E00AC575F /* CustomAnimationCompression.cpp in Sources */,
+				25A1642E242A0C0500AC575F /* IUnityInterface.h in Sources */,
+				25A164122428F62E00AC575F /* DenseClipCompression.cpp in Sources */,
 				25A164132428F62E00AC575F /* IUnityAnimationCompression.h in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
