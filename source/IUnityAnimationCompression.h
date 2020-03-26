@@ -13,6 +13,7 @@ struct AnimationCurveForPlugin
     };
     KeyframeType keyframeType;
     int keyframeCount;
+    int extractedCurveIndex;
     const void* unityCurvePointer;
 };
 
@@ -44,12 +45,16 @@ UNITY_DECLARE_INTERFACE(IUnityAnimationCompression)
     
     //editor api for compression need
     //interface for plugin, need implement in plugin for customize compression
-    int     (*OnClipCompress)(const void* builder, int curveCount, float startTime, float stopTime, float sampleRate, char* retBlobData);
+    //========================================================================
+    //for example 2 curves, one position, one rotation
+    //curveIterCount == 2, extractedCurveCount = 7 = (vector3)3 + (quaternion)4
+    //position curve extractedCurveIndex = 0, rotation curve extractedCurveIndex = 3
+    int     (*OnClipCompress)(const void* builder, int extractedCurveCount, int curveIterCount, float beginTime, float endTime, float sampleRate, char** retBlobData);
     //interface from unity, utility function for helping do compression, remeber no needed to implement in plugin
-    void  (*OnCurveEvaluate)(const void* builder, int curveIndex, float time, float* retValue);
-    void  (*OnCurveEvaluateClamp)(const void* builder, int curveIndex, float time, float* retValue);
-    void  (*GetCurveKeyFrame)(const void* builder, int curveIndex, int frameIndex, KeyFrameForPlugin* retValue);
-    const AnimationCurveForPlugin* (*GetCurve)(const void* builder, int curveIndex);
+    void  (*OnCurveEvaluate)(const void* builder, int curveIter, float time, float* retValue);
+    void  (*OnCurveEvaluateClamp)(const void* builder, int curveIter, float time, float* retValue);
+    void  (*GetCurveKeyFrame)(const void* builder, int curveIter, int frameIndex, KeyFrameForPlugin* retValue);
+    const AnimationCurveForPlugin* (*GetCurve)(const void* builder, int curveIter);
 };
 UNITY_REGISTER_INTERFACE_GUID(0x5655381C42484721ULL, 0xA06479CEF39BF9E9ULL, IUnityAnimationCompression)
 

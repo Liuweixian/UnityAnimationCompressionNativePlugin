@@ -24,28 +24,31 @@ inline int CeilfToInt(float f)
     return f >= 0 ? (int)(f + kBiggestFloatSmallerThanOne) : (int)(f);
 }
 
-int DenseClipCompress(const void* builder, int curveCount, float startTime, float stopTime, float sampleRate, char* retBlobData)
+int DenseClipCompress(const void* builder, int extractedCurveCount, int curveIterCount, float beginTime, float endTime, float sampleRate, char** retBlobData)
 {
     int intSize = sizeof(int);
     int floatSize = sizeof(float);
-    int frameCount = std::max<int>(CeilfToInt(stopTime - startTime) * sampleRate + 1, 2);
-    int totalSize = 2 * intSize + (frameCount + 2) * floatSize;
-    retBlobData = new char[totalSize];
-    int index = 0;
-    retBlobData[index] = frameCount;
-    index += intSize;
-    retBlobData[index] = curveCount;
-    index += intSize;
-    retBlobData[index] = sampleRate;
-    index += floatSize;
-    retBlobData[index] = startTime;
+    int frameCount = std::max<int>(CeilfToInt((endTime - beginTime) * sampleRate) + 1, 2);
+    int totalSize = 2 * intSize + (2 + frameCount * extractedCurveCount) * floatSize;
+    *retBlobData = new char[totalSize];
+    memset(*retBlobData, 0, totalSize);
+    
+    int headerIndex = 0;
+    *reinterpret_cast<int*>(*retBlobData + headerIndex) = frameCount;
+    headerIndex += intSize;
+    *reinterpret_cast<int*>(*retBlobData + headerIndex) = extractedCurveCount;
+    headerIndex += intSize;
+    *reinterpret_cast<float*>(*retBlobData + headerIndex) = sampleRate;
+    headerIndex += floatSize;
+    *reinterpret_cast<float*>(*retBlobData + headerIndex) = beginTime;
+    headerIndex += floatSize;
     
     float* evaluateValue = new float[4];
-    for (int i = 0; i < curveCount; i++)
+    for (int i = 0; i < curveIterCount; i++)
     {
         for (int j = 0; j < frameCount; j++)
         {
-            float time = startTime + ((float)j / sampleRate);
+            float time = beginTime + ((float)j / sampleRate);
             const AnimationCurveForPlugin* curveData = s_CustomAnimation->GetCurve(builder, i);
             if (curveData == nullptr)
                 continue;
@@ -67,10 +70,12 @@ int DenseClipCompress(const void* builder, int curveCount, float startTime, floa
                     break;
             }
             
+            int curIndex = j * extractedCurveCount + curveData->extractedCurveIndex * floatSize + headerIndex;
             for (int k = 0; k < valueCount; k++)
             {
-                index += floatSize;
-                retBlobData[index] = evaluateValue[k];
+                float retValue = evaluateValue[k];
+                *reinterpret_cast<float*>(*retBlobData + curIndex) = retValue;
+                curIndex += floatSize;
             }
         }
     }

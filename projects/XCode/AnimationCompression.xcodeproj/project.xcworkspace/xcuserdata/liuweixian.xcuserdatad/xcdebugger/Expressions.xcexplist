@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "CustomClipCompression(CustomClipBuilder*, mecanim::animation::CustomClip&amp;):CustomClipBuilder.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "DenseClipCompress(void const*, int, int, float, float, float, char*):DenseClipCompression.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "retBlobData">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
