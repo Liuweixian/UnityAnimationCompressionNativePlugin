@@ -2,6 +2,7 @@
 #include <climits>
 #include "assert.h"
 #include <algorithm>
+#include <cmath>
 
 static IUnityInterfaces* s_UnityInterfaces = NULL;
 IUnityInterfaces& GetUnityInterfaces() { return *s_UnityInterfaces; }
@@ -70,7 +71,7 @@ int DenseClipCompress(const void* builder, int extractedCurveCount, int curveIte
                     break;
             }
             
-            int curIndex = j * extractedCurveCount + curveData->extractedCurveIndex * floatSize + headerIndex;
+            int curIndex = (curveData->extractedCurveIndex + j * extractedCurveCount) * floatSize + headerIndex;
             for (int k = 0; k < valueCount; k++)
             {
                 float retValue = evaluateValue[k];
@@ -83,17 +84,73 @@ int DenseClipCompress(const void* builder, int extractedCurveCount, int curveIte
     return totalSize;
 }
 
-void* OnDenseClipLoad(void* blobData, size_t blobSize)
+void* OnDenseClipLoad(const char* blobData, size_t blobSize)
 {
-    return nullptr;
+    int intSize = sizeof(int);
+    int floatSize = sizeof(float);
+    DenseClipUserData* userData = new DenseClipUserData();
+    userData->headerIndex = 0;
+    userData->frameCount = *reinterpret_cast<const int*>(blobData + userData->headerIndex);
+    userData->headerIndex += intSize;
+    userData->extractedCurveCount = *reinterpret_cast<const int*>(blobData + userData->headerIndex);
+    userData->headerIndex += intSize;
+    userData->sampleRate = *reinterpret_cast<const float*>(blobData + userData->headerIndex);
+    userData->headerIndex += floatSize;
+    userData->beginTime = *reinterpret_cast<const float*>(blobData + userData->headerIndex);
+    userData->headerIndex += floatSize;
+    userData->blobData = reinterpret_cast<const char*>(blobData + userData->headerIndex);
+    return userData;
 }
 
 void OnDesneClipUnload(void* userData)
 {
-    
+    if (userData == nullptr)
+        return;
+    DenseClipUserData* denseClipUserData = reinterpret_cast<DenseClipUserData*>(userData);
+    delete denseClipUserData;
 }
 
-void OnDesneClipSample(void* userData, float* output)
+inline float MathLerp(float a, float b, float x)
 {
+    return x * (b - a) + a;
+}
+
+void BlendArray(const float* lhs, const float* rhs, size_t size, float t, float* output)
+{
+    for (size_t i = 0; i < size; i++)
+        output[i] = MathLerp(lhs[i], rhs[i], t);
+}
+
+void  PrepareBlendValues(const DenseClipUserData* denseClipUserData, float time, float*& lhs, float*& rhs, float& u)
+{
+    time -= denseClipUserData->beginTime;
+
+    float index;
+    u = modf(time * denseClipUserData->sampleRate, &index);
+
+    int lhsIndex = (int)index;
+    int rhsIndex = lhsIndex + 1;
+    lhsIndex = std::max(0, lhsIndex);
+    lhsIndex = std::min(denseClipUserData->frameCount - 1, lhsIndex);
+
+    rhsIndex = std::max(0, rhsIndex);
+    rhsIndex = std::min(denseClipUserData->frameCount - 1, rhsIndex);
+    const float* floatBlobData = reinterpret_cast<const float*>(denseClipUserData->blobData);
+
+    lhs = const_cast<float*>(&floatBlobData[lhsIndex * denseClipUserData->extractedCurveCount]);
+    rhs = const_cast<float*>(&floatBlobData[rhsIndex * denseClipUserData->extractedCurveCount]);
+}
+
+void OnDesneClipSample(void* userData, float time, float* output)
+{
+    if (userData == nullptr)
+        return;
     
+    DenseClipUserData* denseClipUserData = reinterpret_cast<DenseClipUserData*>(userData);
+    float u;
+    float* lhsPtr;
+    float* rhsPtr;
+    PrepareBlendValues(denseClipUserData, time, lhsPtr, rhsPtr, u);
+
+    BlendArray(lhsPtr, rhsPtr, denseClipUserData->extractedCurveCount, u, output);
 }

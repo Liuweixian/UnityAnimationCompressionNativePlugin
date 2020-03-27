@@ -26,22 +26,29 @@ struct KeyFrameForPlugin
 };
 
 IUnityInterfaces& GetUnityInterfaces();
-#define ANIMATION_COMPRESSION_FUNCS_CALL(funcname, ...)                                                     \
-    IUnityAnimationCompression* pluginCallback = GetUnityInterfaces().Get<IUnityAnimationCompression>();    \
-    if (pluginCallback != NULL && pluginCallback->funcname != NULL)                                         \
-        pluginCallback->funcname(__VA_ARGS__);                                                              \
+#define ANIMATION_COMPRESSION_FUNCS_CALL(funcname, ...)                                                         \
+    do                                                                                                          \
+    {                                                                                                           \
+        IUnityAnimationCompression* pluginCallback = GetUnityInterfaces().Get<IUnityAnimationCompression>();    \
+        if (pluginCallback != NULL && pluginCallback->funcname != NULL)                                         \
+            pluginCallback->funcname(__VA_ARGS__);                                                              \
+    }while(0)                                                                                                   \
 
-#define ANIMATION_COMPRESSION_FUNCS_CALL_RET(retval, funcname, ...)                                         \
-    IUnityAnimationCompression* pluginCallback = GetUnityInterfaces().Get<IUnityAnimationCompression>();    \
-    if (pluginCallback != NULL && pluginCallback->funcname != NULL)                                         \
-        retval = pluginCallback->funcname(__VA_ARGS__);                                                     \
+#define ANIMATION_COMPRESSION_FUNCS_CALL_RET(retval, funcname, ...)                                             \
+    do                                                                                                          \
+    {                                                                                                           \
+        IUnityAnimationCompression* pluginCallback = GetUnityInterfaces().Get<IUnityAnimationCompression>();    \
+        if (pluginCallback != NULL && pluginCallback->funcname != NULL)                                         \
+            retval = pluginCallback->funcname(__VA_ARGS__);                                                     \
+    }while(0)                                                                                                   \
+
 
 UNITY_DECLARE_INTERFACE(IUnityAnimationCompression)
 {
     //runtime api, need implement in plugin
-    void*   (*OnClipLoad)(void* blobData, size_t blobSize); //return userData
+    void*   (*OnClipLoad)(const char* blobData, size_t blobSize); //return userData
     void    (*OnClipUnload)(void* userData);
-    void    (*OnClipSample)(void* userData, float* output);
+    void    (*OnClipSample)(void* userData, float time, float* output);
     
     //editor api for compression need
     //interface for plugin, need implement in plugin for customize compression
