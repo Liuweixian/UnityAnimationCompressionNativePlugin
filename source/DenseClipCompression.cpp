@@ -4,20 +4,6 @@
 #include <algorithm>
 #include <cmath>
 
-static IUnityInterfaces* s_UnityInterfaces = NULL;
-IUnityInterfaces& GetUnityInterfaces() { return *s_UnityInterfaces; }
-static IUnityAnimationCompression* s_CustomAnimation = NULL;
-
-extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginLoad(IUnityInterfaces* unityInterfaces)
-{
-    s_UnityInterfaces = unityInterfaces;
-    s_CustomAnimation = s_UnityInterfaces->Get<IUnityAnimationCompression>();
-    s_CustomAnimation->OnClipCompress = DenseClipCompress;
-    s_CustomAnimation->OnClipLoad = OnDenseClipLoad;
-    s_CustomAnimation->OnClipUnload = OnDesneClipUnload;
-    s_CustomAnimation->OnClipSample = OnDesneClipSample;
-}
-
 const float kBiggestFloatSmallerThanOne = 0.99999994f;
 inline int CeilfToInt(float f)
 {
@@ -44,17 +30,19 @@ int DenseClipCompress(const void* builder, int extractedCurveCount, int curveIte
     *reinterpret_cast<float*>(*retBlobData + headerIndex) = beginTime;
     headerIndex += floatSize;
     
+    IUnityAnimationCompression* customAnimation = GetUnityInterfaces().Get<IUnityAnimationCompression>();
+    
     float* evaluateValue = new float[4];
     for (int i = 0; i < curveIterCount; i++)
     {
         for (int j = 0; j < frameCount; j++)
         {
             float time = beginTime + ((float)j / sampleRate);
-            const AnimationCurveForPlugin* curveData = s_CustomAnimation->GetCurve(builder, i);
+            const AnimationCurveForPlugin* curveData = customAnimation->GetCurve(builder, i);
             if (curveData == nullptr)
                 continue;
             
-            s_CustomAnimation->OnCurveEvaluateClamp(builder, i, time, evaluateValue);
+            customAnimation->OnCurveEvaluateClamp(builder, i, time, evaluateValue);
             
             int valueCount = 0;
             switch (curveData->keyframeType) {
