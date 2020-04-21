@@ -15,4 +15,5 @@ void*   OnDenseClipLoad(const char* blobData, size_t blobSize); //return userDat
 void    OnDesneClipUnload(void* userData);
 void    OnDesneClipSample(void* userData, float time, float* output);
 
-int     DenseClipCompress(const void* builder, int extractedCurveCount, int curveIterCount, float beginTime, float endTime, float sampleRate, char** retBlobData);
+int     DenseClipCompressBegin(const void* builder, int extractedCurveCount, int curveIterCount, float beginTime, float endTime, float sampleRate, char** retBlobData);
+void    DenseClipCompressEnd(char** retBlobData);

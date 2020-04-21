@@ -11,7 +11,7 @@ inline int CeilfToInt(float f)
     return f >= 0 ? (int)(f + kBiggestFloatSmallerThanOne) : (int)(f);
 }
 
-int DenseClipCompress(const void* builder, int extractedCurveCount, int curveIterCount, float beginTime, float endTime, float sampleRate, char** retBlobData)
+int DenseClipCompressBegin(const void* builder, int extractedCurveCount, int curveIterCount, float beginTime, float endTime, float sampleRate, char** retBlobData)
 {
     int intSize = sizeof(int);
     int floatSize = sizeof(float);
@@ -70,6 +70,13 @@ int DenseClipCompress(const void* builder, int extractedCurveCount, int curveIte
     }
     delete[] evaluateValue;
     return totalSize;
+}
+
+void DenseClipCompressEnd(char** retBlobData)
+{
+    if (*retBlobData != nullptr)
+        delete[] *retBlobData;
+    *retBlobData = nullptr;
 }
 
 void* OnDenseClipLoad(const char* blobData, size_t blobSize)

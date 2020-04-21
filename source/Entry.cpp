@@ -14,7 +14,8 @@ extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API UnityPluginLoad(IUnit
 {
     s_UnityInterfaces = unityInterfaces;
     IUnityAnimationCompression* customAnimation = s_UnityInterfaces->Get<IUnityAnimationCompression>();
-    customAnimation->OnClipCompress = DenseClipCompress;
+    customAnimation->OnClipCompressBegin = DenseClipCompressBegin;
+    customAnimation->OnClipCompressEnd = DenseClipCompressEnd;
     customAnimation->OnClipLoad = OnDenseClipLoad;
     customAnimation->OnClipUnload = OnDesneClipUnload;
     customAnimation->OnClipSample = OnDesneClipSample;
