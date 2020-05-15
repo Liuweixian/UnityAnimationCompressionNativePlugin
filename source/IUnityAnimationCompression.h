@@ -46,7 +46,7 @@ IUnityInterfaces& GetUnityInterfaces();
 UNITY_DECLARE_INTERFACE(IUnityAnimationCompression)
 {
     //runtime api, need implement in plugin
-    void* (*OnClipLoad)(const char* blobData, size_t blobSize); //return userData
+    void* (*OnClipLoad)(const char* blobData, size_t blobSize, const int customValue); //return userData
     void  (*OnClipUnload)(void* userData);
     void  (*OnClipSample)(void* userData, float time, float* output);
     
@@ -56,7 +56,7 @@ UNITY_DECLARE_INTERFACE(IUnityAnimationCompression)
     //for example 2 curves, one position, one rotation
     //curveIterCount == 2, extractedCurveCount = 7 = (vector3)3 + (quaternion)4
     //position curve extractedCurveIndex = 0, rotation curve extractedCurveIndex = 3
-    int   (*OnClipCompressBegin)(const void* builder, int extractedCurveCount, int curveIterCount, float beginTime, float endTime, float sampleRate, char** retBlobData);
+    int   (*OnClipCompressBegin)(const void* builder, int extractedCurveCount, int curveIterCount, float beginTime, float endTime, float sampleRate, const int customValue, char** retBlobData);
     void  (*OnClipCompressEnd)(char** retBlobData);
     //interface from unity, utility function for helping do compression, remeber no needed to implement in plugin
     void  (*OnCurveEvaluate)(const void* builder, int curveIter, float time, float* retValue);
